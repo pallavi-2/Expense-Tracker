@@ -9,7 +9,7 @@ namespace ExpenseTracker.Mappers
             {
                 return new TransactionResponse
                 {
-                    
+                    TransactionId = transactionDto.TransactionId,
                     Type = transactionDto.Type,
                     Amount = transactionDto.Amount,
                     Date = transactionDto.Date,

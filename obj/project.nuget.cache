@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "lmRZGs2pehI=",
+  "dgSpecHash": "o+6Ru+h8ciY=",
   "success": true,
-  "projectFilePath": "D:\\Programming\\C#\\ExpenseTracker\\ExpenseTracker\\ExpenseTracker.csproj",
+  "projectFilePath": "D:\\Programming\\CSharp\\ExpenseTracker\\ExpenseTracker\\ExpenseTracker.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\palla\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\palla\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

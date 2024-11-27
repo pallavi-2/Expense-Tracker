@@ -9,6 +9,7 @@ namespace ExpenseTracker.Mappers
         {
             return new BudgetResponse
             {
+                BudgetId = budgetDto.BudgetId,
                 Category = budgetDto.Category,
                 MonthlyLimit = budgetDto.MonthlyLimit,
                 AmountSpent = budgetDto.AmountSpent,

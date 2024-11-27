@@ -5120,11 +5120,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Programming\\C#\\ExpenseTracker\\ExpenseTracker\\ExpenseTracker.csproj",
+      "projectUniqueName": "D:\\Programming\\CSharp\\ExpenseTracker\\ExpenseTracker\\ExpenseTracker.csproj",
       "projectName": "ExpenseTracker",
-      "projectPath": "D:\\Programming\\C#\\ExpenseTracker\\ExpenseTracker\\ExpenseTracker.csproj",
+      "projectPath": "D:\\Programming\\CSharp\\ExpenseTracker\\ExpenseTracker\\ExpenseTracker.csproj",
       "packagesPath": "C:\\Users\\palla\\.nuget\\packages\\",
-      "outputPath": "D:\\Programming\\C#\\ExpenseTracker\\ExpenseTracker\\obj\\",
+      "outputPath": "D:\\Programming\\CSharp\\ExpenseTracker\\ExpenseTracker\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\palla\\AppData\\Roaming\\NuGet\\NuGet.Config",

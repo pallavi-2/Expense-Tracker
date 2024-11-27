@@ -47,7 +47,7 @@ namespace ExpenseTracker.Controllers
             {
                 return Unauthorized();
             }
-            var transaction = await _context.Transactions.FirstOrDefaultAsync(x=>x.TransactionId == id);
+            var transaction = await _context.Transactions.FirstOrDefaultAsync(x=>x.TransactionId == id && x.UserId==int.Parse(userId));
             if (transaction == null)
             {
                 return NotFound();
@@ -70,19 +70,19 @@ namespace ExpenseTracker.Controllers
             }
 
             var transaction = transactionDto.ToTransactionFromDto(int.Parse(userId));
-            //transaction.UserId = int.Parse(userId);
-            await _context.Transactions.AddAsync(transaction);
-            await _context.SaveChangesAsync();
-
-            if (transaction.Type == "Expenses")
+            if (transaction.Type == "Expense")
             {
                 var category = transactionDto.Category;
-                var categoryTransaction = await _context.Budgets.FirstOrDefaultAsync(x=>x.Category == category && x.UserId == int.Parse(userId));
-                categoryTransaction.AmountSpent -= transactionDto.Amount;
-                if (categoryTransaction.AmountSpent < 0)
+                var categoryTransaction = await _context.Budgets.FirstOrDefaultAsync(x => x.Category == category && x.UserId == int.Parse(userId));
+                categoryTransaction.AmountSpent = categoryTransaction.AmountSpent + transactionDto.Amount;
+                if (categoryTransaction.AmountSpent > categoryTransaction.MonthlyLimit)
                 {
                     _emailSender.SendEmail(User.FindFirstValue(ClaimTypes.Email), String.Format("Budget limit for {0} has exceeded the limit", category));
                 }
+                //transaction.UserId = int.Parse(userId);
+                await _context.Transactions.AddAsync(transaction);
+
+            
                 await _context.SaveChangesAsync();
 
 
@@ -92,7 +92,7 @@ namespace ExpenseTracker.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTransaction([FromBody] TransactionCreateDto transactionDto, [FromRoute] int id)
+        public async Task<ActionResult<TransactionResponse>> UpdateTransaction([FromBody] TransactionCreateDto transactionDto, [FromRoute] int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var transaction = await _context.Transactions.FirstOrDefaultAsync(x => x.TransactionId == id && x.UserId == int.Parse(userId));
@@ -107,6 +107,59 @@ namespace ExpenseTracker.Controllers
 
             await _context.SaveChangesAsync();
             return Ok(transaction.ToTransactionDto());
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            var transaction = await _context.Transactions.FirstOrDefaultAsync(x => x.TransactionId == id && x.UserId == int.Parse(userId));
+            if (transaction == null)
+            {
+                return NotFound();
+            }
+
+            _context.Transactions.Remove(transaction);
+            await _context.SaveChangesAsync();
+            return (NoContent());
+
+        }
+
+        [HttpGet("aggregate")]
+        public async Task<IActionResult> GetSpendingByTimePeriod([FromQuery] string period)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            DateTime dateTime;
+            switch (period.ToLower())
+            {
+                case "weekly": { dateTime = DateTime.UtcNow.AddDays(-7); break; }
+                case "monthly": { dateTime = DateTime.UtcNow.AddMonths(-1); break; }
+                case "yearly": { dateTime = DateTime.UtcNow.AddYears(-1); break; }
+                default:
+                    return BadRequest("Invalid period. Use 'weekly', 'monthly', or 'yearly'.");
+
+            }
+
+            var transaction = await _context.Transactions.Where(x=>x.UserId == int.Parse(userId) && x.Date >= dateTime)
+                .GroupBy(x=>x.Type)
+                .Select(g => new
+                {
+                    Type = g.Key,
+                    TotalAmount = g.Sum(x => x.Amount)
+                })
+                .ToListAsync();
+
+            return Ok(transaction);
+
         }
     }
 }
