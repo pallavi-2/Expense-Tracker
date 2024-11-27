@@ -16,7 +16,7 @@ namespace ExpenseTracker.Services
             _password = config["Password"];
             
         }
-        public void SendEmail(string toEmail, string subject)
+        public void SendEmail(string toEmail, string subject, string content)
         {
             
 
@@ -27,14 +27,12 @@ namespace ExpenseTracker.Services
 
             // Create email message
             MailMessage mailMessage = new MailMessage();
-            mailMessage.From = new MailAddress("abby.wehner53@ethereal.email");
+            mailMessage.From = new MailAddress(_email);
             mailMessage.To.Add(toEmail);
             mailMessage.Subject = subject;
             mailMessage.IsBodyHtml = true;
             StringBuilder mailBody = new StringBuilder();
-            mailBody.AppendFormat("<h1>User Registered</h1>");
-            mailBody.AppendFormat("<br />");
-            mailBody.AppendFormat("<p>Thank you For Registering account</p>");
+            mailBody.AppendFormat("<p>{0}</p>",content);
             mailMessage.Body = mailBody.ToString();
 
             // Send email

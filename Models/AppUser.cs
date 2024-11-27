@@ -20,6 +20,7 @@ namespace ExpenseTracker.Models
         public ICollection<Transaction> Transactions { get; set; }
 
         public ICollection<Budget> Budgets { get; set; }
+        public ICollection<SavingGoal> SavingGoals { get; set; }
     }
 }
 

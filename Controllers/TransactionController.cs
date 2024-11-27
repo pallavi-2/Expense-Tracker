@@ -77,16 +77,25 @@ namespace ExpenseTracker.Controllers
                 categoryTransaction.AmountSpent = categoryTransaction.AmountSpent + transactionDto.Amount;
                 if (categoryTransaction.AmountSpent > categoryTransaction.MonthlyLimit)
                 {
-                    _emailSender.SendEmail(User.FindFirstValue(ClaimTypes.Email), String.Format("Budget limit for {0} has exceeded the limit", category));
+                    _emailSender.SendEmail(User.FindFirstValue(ClaimTypes.Email),"Monthly Limit Reached", String.Format("Budget limit for {0} has exceeded the limit", category));
                 }
-                //transaction.UserId = int.Parse(userId);
-                await _context.Transactions.AddAsync(transaction);
-
-            
-                await _context.SaveChangesAsync();
-
-
             }
+
+            if (transaction.Type == "Goal")
+            {
+                var category = transactionDto.Category;
+                var goalTransaction = await _context.SavingGoals.FirstOrDefaultAsync(x => x.GoalName == category && x.UserId == int.Parse(userId));
+                goalTransaction.CollectedAmount += (float)transactionDto.Amount;
+                if (goalTransaction.CollectedAmount > goalTransaction.TotalAmount)
+                {
+                    _emailSender.SendEmail(User.FindFirstValue(ClaimTypes.Email),"Goal Reached", String.Format("You have reached the goal amount for {0}.", goalTransaction.GoalName));
+                }
+            }
+
+            await _context.Transactions.AddAsync(transaction);
+
+
+            await _context.SaveChangesAsync();
             return Ok(transaction.ToTransactionDto());
 
         }

@@ -13,6 +13,7 @@ namespace ExpenseTracker.Data
         public DbSet<AppUser> Users { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Budget> Budgets { get; set; }
+        public DbSet<SavingGoal> SavingGoals { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +29,12 @@ namespace ExpenseTracker.Data
                 .HasOne(t=>t.User)
                 .WithMany(u=>u.Budgets)
                 .HasForeignKey(t => t.UserId) 
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SavingGoal>()
+                .HasOne(t => t.User)
+                .WithMany(u => u.SavingGoals)
+                .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
